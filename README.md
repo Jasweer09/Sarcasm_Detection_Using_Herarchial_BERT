@@ -148,7 +148,7 @@ This project implements a Hierarchical BERT model for sarcasm detection on Reddi
 ## 9. Results  
 - Achieves reasonable accuracy on sarcasm detection.  
 - Embedding + pooling provides efficiency but limited depth.  
-
+- Test Loss: 0.6932113170623779, Test Accuracy: 0.4984999895095825
 ---
 
 ## 10. Key Takeaways  
@@ -159,19 +159,3 @@ This project implements a Hierarchical BERT model for sarcasm detection on Reddi
 
 ---
 
-## 11. Next Steps (Possible Improvements)  
-- Replace pooling with **LSTM/GRU** to model sequential dependencies.  
-- Use **pre-trained embeddings (Word2Vec, GloVe)** for richer word knowledge.  
-- Upgrade to **BERT/transformer models** for contextual understanding.  
-- Perform **hyperparameter tuning** and **expand dataset** for better generalization.  
-
----
-
-# ✅ Final Note  
-This project differs from **BERT-based sarcasm detection** in that it:  
-- Does **not** use pre-trained contextual embeddings.  
-- Does **not** apply attention or transformer encoders.  
-- Relies on **average pooling of embeddings**, treating all words equally.  
-- Focuses on **speed and simplicity** rather than deep contextual nuance.  
-
-This makes the model **fast and resource-efficient**, but less powerful than BERT when detecting sarcasm that depends on subtle context or long-range word interactions.  
