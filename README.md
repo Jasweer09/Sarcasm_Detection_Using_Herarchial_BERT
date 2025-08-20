@@ -54,108 +54,70 @@ This project implements a sarcasm detection system using **deep learning with a 
 
 ## 5. Model Architecture  
 
-+-------------------------+
-|        Input Layer      |
-|  Tokenized Text (e.g.,  |
-|  input_ids from BERT    |
-|  Tokenizer, shape:      |
-|  (batch_size, seq_len)  |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|     BERT Embedding      |
-| TFBertModel (pre-trained|
-| 'bert-base-uncased')    |
-| Output: (batch_size,    |
-| seq_len, 768)           |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|  Sentence Encoding Layer|
-| Dense(768, activation=  |
-| 'relu')                 |
-| Processes BERT output   |
-| to encode sentences.    |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|Context Summarization    |
-| GlobalAveragePooling1D()|
-| Averages across sequence|
-| to summarize context.   |
-| Output: (batch_size, 768)|
-+-------------------------+
-            |
-            v
-+-------------------------+
-| Dimension Expansion     |
-| tf.expand_dims(..., axis=1)|
-| Prepares for LSTM:     |
-| (batch_size, 1, 768)    |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|   Context Encoder Layer |
-| Bidirectional(          |
-| LSTM(128, return_seq=True))|
-| Captures temporal       |
-| dependencies bidirection-|
-| ally.                   |
-| Output: (batch_size, 1, |
-| 256) [bi-directional]   |
-+-------------------------+
-            |
-            v
-+-------------------------+
-| Dimension Squeeze       |
-| tf.squeeze(..., axis=1) |
-| Removes singleton dim:  |
-| (batch_size, 256)       |
-+-------------------------+
-            |
-            v
-+-------------------------+
-| Dimension Expansion for |
-| CNN                     |
-| tf.expand_dims(...,     |
-| axis=-1)                |
-| Adds channel:           |
-| (batch_size, 256, 1)    |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|      CNN Layer          |
-| Conv1D(filters=64,      |
-| kernel_size=2,          |
-| activation='relu')      |
-| Extracts local features.|
-| Followed by:            |
-| GlobalMaxPooling1D()    |
-| Output: (batch_size, 64)|
-+-------------------------+
-            |
-            v
-+-------------------------+
-| Fully Connected Layer   |
-| Dense(32, activation=   |
-| 'relu')                 |
-| Learns higher-level     |
-| representations.        |
-+-------------------------+
-            |
-            v
-+-------------------------+
-|       Output Layer      |
-| Dense(1, activation=    |
-| 'sigmoid')              |
-| Binary classification   |
-| (Sarcasm: 1, Non: 0)    |
-+-------------------------+
+
+This project implements a Hierarchical BERT model for sarcasm detection on Reddit comments, combining BERT embeddings with LSTM and CNN layers for contextual feature extraction and binary classification.
+
+## Model Architecture
+
+# Model Architecture Flow
+
+```markdown
+
+|------------------------------------------------|
+| Input: Tokenized Text (input_ids, shape: (batch_size, 100)) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| BERT Embedding: TFBertModel('bert-base-uncased', output: (batch_size, 100, 768)) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Sentence Encoding: Dense(768, activation='relu') |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Context Summarization: GlobalAveragePooling1D(), output: (batch_size, 768) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Dimension Expansion: tf.expand_dims(axis=1), output: (batch_size, 1, 768) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Context Encoder: Bidirectional(LSTM(128, return_sequences=True)), output: (batch_size, 1, 256) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Dimension Squeeze: tf.squeeze(axis=1), output: (batch_size, 256) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Dimension Expansion for CNN: tf.expand_dims(axis=-1), output: (batch_size, 256, 1) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| CNN Layer: Conv1D(64, kernel_size=2, activation='relu') + GlobalMaxPooling1D(), output: (batch_size, 64) |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Fully Connected: Dense(32, activation='relu') |
+|------------------------------------------------|
+                |                
+                v                
+|------------------------------------------------|
+| Output: Dense(1, activation='sigmoid') for binary classification (Sarcasm: 1, Non: 0) |
+|------------------------------------------------|
+
+```
 
 - **Embedding Layer**: Creates dense representations of words.  
 - **GlobalAveragePooling1D**: Compresses entire sentence into one vector by averaging.  
